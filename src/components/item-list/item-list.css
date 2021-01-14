@@ -1,0 +1,11 @@
+.image-container img {
+	width: 200px;
+}
+
+.item-list {
+	border: 1px solid black;
+	border-radius: 6px;
+	padding: 20px;
+	background-color: rgba(34, 34, 34, 0.651);
+	margin: 10px 0;
+}

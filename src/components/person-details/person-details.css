@@ -1,0 +1,15 @@
+.person-image-container img {
+	width: 200px;
+}
+
+.person-details {
+	border: 1px solid black;
+	border-radius: 6px;
+	padding: 20px;
+	background-color: rgba(34, 34, 34, 0.651);
+	margin: 10px 0;
+}
+
+.person-details h3 {
+	margin-bottom: 20px;
+}
