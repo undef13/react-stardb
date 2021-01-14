@@ -2,39 +2,68 @@ export default class SwapiService {
   _baseUrl = "https://swapi.dev/api";
 
   async getResourse(url) {
-		const response = await fetch(`${this._baseUrl}${url}`);
-		
-		if (!response.ok) {
-			throw new Error(`Could not fetch ${url}, received ${response.status}`);
-		}
+    const response = await fetch(`${this._baseUrl}${url}`);
 
-    return await response.json();
+    if (!response.ok) {
+      throw new Error(`Could not fetch ${url}, received ${response.status}`);
+    }
+    const responseJSON = await response.json();
+    return responseJSON;
   }
 
   async getAllPeople() {
 		const response = await this.getResourse(`/people`);
+    return response.results.map(this._transformPerson);
+  }
+
+  getPersonById(id) {
+    return this.getResourse(`/people/${id}`)
+      .then(this._transformPerson)
+      .catch((e) => console.log(e));
+  }
+
+  async getAllPlanets() {
+    const response = await this.getResourse(`/planets`);
+    return response.results.map(this._transformPlanet);
+  }
+
+  getPlanetById(id) {
+    return this.getResourse(`/planets/${id}`)
+      .then(this._transformPlanet)
+      .catch((e) => console.log(e));
+  }
+
+  async getAllStarships() {
+    const response = await this.getResourse(`/starships`);
     return response.results;
-	}
-	
-	async getPersonById(id) {
-		return await this.getResourse(`/people/${id}`);
-	}
+  }
 
-	async getAllPlanets() {
-		const response = await this.getResourse(`/planets`);
-		return response.results;
-	}
+  async getStarshipById(id) {
+    return await this.getResourse(`/starships/${id}`);
+  }
 
-	async getPlanetById(id) {
-		return await this.getResourse(`/planets/${id}`);
-	}
+  _extractId(item) {
+    const idRegExp = /\/([0-9]*)\/$/;
+    return item.match(idRegExp)[1];
+  }
 
-	async getAllStarships() {
-		const response = await this.getResourse(`/starships`);
-		return response.results;
-	}
+  _transformPlanet = (planet) => {
+    return {
+      id: this._extractId(planet.url),
+      population: planet.population,
+      planetName: planet.name,
+      diameter: planet.diameter,
+      rotationPeriod: planet.rotation_period,
+    };
+  };
 
-	async getStarshipById(id) {
-		return await this.getResourse(`/starships/${id}`);
-	}
+  _transformPerson = (person) => {
+    return {
+      id: this._extractId(person.url),
+			name: person.name,
+			birthYear: person.birth_year,
+			gender: person.gender,
+			height: person.height
+    };
+  };
 }
