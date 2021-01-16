@@ -10,50 +10,45 @@ export default class ItemList extends Component {
 	swapi = new SwapiService();
 
 	state = {
-		people: null,
+		list: null,
 		isLoading: true,
 		isError: false
 	}
 
-	getPeople = () => {
-		this.swapi.getAllPeople()
-			.then(this.onPeopleLoaded)
-			.catch(this.onError)
-	}
-
-	onPeopleLoaded = (people) => {
-		return this.setState({ people, isLoading: false })
+	onListLoaded = (list) => {
+		return this.setState({ list, isLoading: false })
 	}
 
 	onError = () => {
-		return this.state({ isError: true, isLoading: false })
+		return this.setState({ isError: true, isLoading: false })
 	}
 	
 	componentDidMount() {
-		this.getPeople();
+		const { getData } = this.props;
+		getData().then(this.onListLoaded).catch(this.onError);
 	}
 
-	renderList = (people) => {
-		return people.map(({id, name}) => {
+	renderList = (list) => {
+		const { onItemSelect, renderItems } = this.props;
+		return list.map(item => {
+			const { id } = item;
 			return (
-				<li key={id} onClick={() => this.props.onPersonSelect(id)} className="list-group-item">
-					<span>{name}</span>
+				<li key={id} onClick={() => onItemSelect(id)} className="list-group-item">
+					<span>{renderItems(item)}</span>
 				</li>
 			)
 		})
 	}
 
 	render () {
-		const { people, isLoading, isError } = this.state;
-
-		if(!people) {
+		const { list, isLoading, isError } = this.state;
+		if(!list) {
 			return <Spinner />
 		}
 
-		const peopleList = this.renderList(people)
-		
+		const itemsList = this.renderList(list)
 		const spinner = isLoading ? <Spinner /> : null;
-		const listView = !isLoading && !isError ? <ListView people={peopleList} /> : null;
+		const listView = !isLoading && !isError ? <ListView itemsList={itemsList} /> : null;
 		const error = isError ? <ErrorIndicator /> : null;
 
 		return (
@@ -67,10 +62,10 @@ export default class ItemList extends Component {
 };
 
 const ListView = (props) => {
-	const { people } = props;
+	const { itemsList } = props;
 	return (
 		<ul className="list-group">
-			{people}
+			{itemsList}
 		</ul>
 	)
 }

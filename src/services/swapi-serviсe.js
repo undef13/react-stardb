@@ -1,7 +1,7 @@
 export default class SwapiService {
   _baseUrl = "https://swapi.dev/api";
 
-  async getResourse(url) {
+  getResourse = async (url) => {
     const response = await fetch(`${this._baseUrl}${url}`);
 
     if (!response.ok) {
@@ -11,38 +11,43 @@ export default class SwapiService {
     return responseJSON;
   }
 
-  async getAllPeople() {
+  getAllPeople = async () => {
 		const response = await this.getResourse(`/people`);
     return response.results.map(this._transformPerson);
   }
 
-  getPersonById(id) {
+  getPersonById = async (id) => {
     return this.getResourse(`/people/${id}`)
       .then(this._transformPerson)
       .catch((e) => console.log(e));
   }
 
-  async getAllPlanets() {
+  getAllPlanets = async () => {
     const response = await this.getResourse(`/planets`);
     return response.results.map(this._transformPlanet);
   }
 
-  getPlanetById(id) {
+  getPlanetById = async (id) => {
     return this.getResourse(`/planets/${id}`)
       .then(this._transformPlanet)
       .catch((e) => console.log(e));
   }
 
-  async getAllStarships() {
-    const response = await this.getResourse(`/starships`);
-    return response.results;
+  getAllStarships = async () => {
+		const response = await this.getResourse(`/starships`);
+    return response.results.map(this._transformStarship);
   }
 
-  async getStarshipById(id) {
-    return await this.getResourse(`/starships/${id}`);
+  getStarshipById = async (id) => {
+		try {
+			const response = await this.getResourse(`/starships/${id}`);
+			return this._transformStarship(response);
+		} catch (e) {
+			console.log(e);
+		}
   }
 
-  _extractId(item) {
+  _extractId = (item) => {
     const idRegExp = /\/([0-9]*)\/$/;
     return item.match(idRegExp)[1];
   }
@@ -51,7 +56,7 @@ export default class SwapiService {
     return {
       id: this._extractId(planet.url),
       population: planet.population,
-      planetName: planet.name,
+      name: planet.name,
       diameter: planet.diameter,
       rotationPeriod: planet.rotation_period,
     };
@@ -65,5 +70,15 @@ export default class SwapiService {
 			gender: person.gender,
 			height: person.height
     };
-  };
+	};
+	
+	_transformStarship = (starship) => {
+		return {
+			id: this._extractId(starship.url),
+			name: starship.name,
+			cargoCapacity: starship.cargo_capacity,
+			cost: starship.cost_in_credits,
+			length: starship.length
+		};
+	}
 }

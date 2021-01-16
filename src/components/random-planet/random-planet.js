@@ -20,6 +20,10 @@ export default class RandomPlanet extends Component {
 		this.interval = setInterval(this.getPlanet, 5000);
 	}
 
+	componentWillUnmount() {
+		clearInterval(this.interval)
+	}
+
 	onPlanetLoaded = (planet) => {
 		return this.setState({planet, isLoading: false});
 	};
@@ -53,7 +57,7 @@ export default class RandomPlanet extends Component {
 }
 
 const PlanetView = (props) => {
-	const { id, population, planetName, diameter, rotationPeriod } = props.planet;
+	const { id, population, name, diameter, rotationPeriod } = props.planet;
   return (
     <React.Fragment>
       <div className="random-planet-img-container">
@@ -63,7 +67,7 @@ const PlanetView = (props) => {
         ></img>
       </div>
       <div className="random-planet-info">
-        <h3>{planetName}</h3>
+        <h3>{name}</h3>
         <ul className="random-planet-list">
           <li className="random-planet-list-item">
             <span>Population: </span>
